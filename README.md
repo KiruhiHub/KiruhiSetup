@@ -18,6 +18,10 @@
 
 <br>
 
+**[⬇️ Linux için İndir (v1.0.0)](https://github.com/KiruhiHub/SetupWizard/releases/download/v1.0.0/SetupWizard-linux-amd64)**
+
+<br>
+
 </div>
 
 ---
