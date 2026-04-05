@@ -9,21 +9,18 @@
 <body>
 <div class="shell">
 
-  <!-- ── Sidebar ── -->
   <aside class="sidebar">
     <div class="sidebar-logo"><i class="fa-brands fa-linux"></i></div>
     <div class="sidebar-steps">
-      <div class="step-node active" title="Profil"><i class="fa-solid fa-user"></i></div>
+      <div class="step-node active"><i class="fa-solid fa-user"></i></div>
       <div class="step-connector"></div>
-      <div class="step-node" title="Masaüstü"><i class="fa-solid fa-display"></i></div>
+      <div class="step-node"><i class="fa-solid fa-display"></i></div>
       <div class="step-connector"></div>
-      <div class="step-node" title="Bulut"><i class="fa-solid fa-cloud"></i></div>
+      <div class="step-node"><i class="fa-solid fa-cloud"></i></div>
     </div>
   </aside>
 
-  <!-- ── Main ── -->
   <div class="content">
-
     <div class="top-bar">
       <span class="top-bar-title">ArchInit</span>
       <div class="progress-pill">
@@ -42,25 +39,21 @@
       </div>
 
       <div class="profile-grid">
-
         <button class="pcard active up d1" data-profile="gunluk" onclick="pick(this)">
           <div class="pcard-dot"><i class="fa-solid fa-check"></i></div>
           <div class="pcard-icon-box">🏠</div>
           <span class="pcard-label">Günlük</span>
         </button>
-
         <button class="pcard up d2" data-profile="yazilimci" onclick="pick(this)">
           <div class="pcard-dot"><i class="fa-solid fa-check"></i></div>
           <div class="pcard-icon-box">💻</div>
           <span class="pcard-label">Yazılımcı</span>
         </button>
-
         <button class="pcard up d3" data-profile="ozel" onclick="pick(this)">
           <div class="pcard-dot"><i class="fa-solid fa-check"></i></div>
           <div class="pcard-icon-box">🎛️</div>
           <span class="pcard-label">Özel</span>
         </button>
-
       </div>
 
       <div class="bottom-controls up d4">
@@ -79,8 +72,92 @@
 
     </main>
   </div>
-
 </div>
+
+<!-- ── Özel Profil Modal ── -->
+<div class="modal-overlay hidden" id="modal-custom">
+  <div class="modal-box" style="max-width:480px;width:92vw">
+    <div class="modal-header">
+      <span class="modal-title">
+        <i class="fa-solid fa-sliders" style="color:var(--accent-hi)"></i>&nbsp; Uygulamaları Seç
+      </span>
+      <button class="modal-close" id="btn-custom-cancel">
+        <i class="fa-solid fa-xmark"></i>
+      </button>
+    </div>
+
+    <!-- Uygulama grid -->
+    <div class="app-grid">
+
+      <button class="app-toggle" data-app="chrome">
+        <i class="fa-brands fa-chrome" style="color:#4285f4"></i>
+        <span>Chrome</span>
+      </button>
+      <button class="app-toggle" data-app="firefox">
+        <i class="fa-brands fa-firefox-browser" style="color:#ff7139"></i>
+        <span>Firefox</span>
+      </button>
+      <button class="app-toggle" data-app="librewolf">
+        <i class="fa-solid fa-shield-halved" style="color:#00acff"></i>
+        <span>LibreWolf</span>
+      </button>
+      <button class="app-toggle" data-app="vlc">
+        <i class="fa-solid fa-circle-play" style="color:#ff8800"></i>
+        <span>VLC</span>
+      </button>
+      <button class="app-toggle" data-app="spotify">
+        <i class="fa-brands fa-spotify" style="color:#1db954"></i>
+        <span>Spotify</span>
+      </button>
+      <button class="app-toggle" data-app="discord">
+        <i class="fa-brands fa-discord" style="color:#5865f2"></i>
+        <span>Discord</span>
+      </button>
+      <button class="app-toggle" data-app="telegram">
+        <i class="fa-brands fa-telegram" style="color:#2ca5e0"></i>
+        <span>Telegram</span>
+      </button>
+      <button class="app-toggle" data-app="whatsapp">
+        <i class="fa-brands fa-whatsapp" style="color:#25d366"></i>
+        <span>WhatsApp</span>
+      </button>
+      <button class="app-toggle" data-app="zoom">
+        <i class="fa-solid fa-video" style="color:#2d8cff"></i>
+        <span>Zoom</span>
+      </button>
+      <button class="app-toggle" data-app="libreoffice">
+        <i class="fa-solid fa-file-word" style="color:#18a303"></i>
+        <span>LibreOffice</span>
+      </button>
+      <button class="app-toggle" data-app="vscodium">
+        <i class="fa-solid fa-code" style="color:#007acc"></i>
+        <span>VSCodium</span>
+      </button>
+      <button class="app-toggle" data-app="docker">
+        <i class="fa-brands fa-docker" style="color:#2496ed"></i>
+        <span>Docker</span>
+      </button>
+      <button class="app-toggle" data-app="git">
+        <i class="fa-brands fa-git-alt" style="color:#f05032"></i>
+        <span>Git</span>
+      </button>
+      <button class="app-toggle" data-app="btop">
+        <i class="fa-solid fa-gauge-high" style="color:#34d399"></i>
+        <span>btop</span>
+      </button>
+      <button class="app-toggle" data-app="neovim">
+        <i class="fa-solid fa-terminal" style="color:#57a143"></i>
+        <span>Neovim</span>
+      </button>
+
+    </div>
+
+    <button class="btn-primary" id="btn-custom-confirm" style="margin-top:.5rem">
+      <i class="fa-solid fa-arrow-right"></i>&nbsp; Devam Et
+    </button>
+  </div>
+</div>
+
 <script type="module" src="/src/main.js"></script>
 </body>
 </html>
