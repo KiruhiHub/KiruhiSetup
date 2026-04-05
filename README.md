@@ -1,45 +1,64 @@
 <div align="center">
 
-<img src="build/appicon.png" width="96" alt="ArchInit logo">
+<br>
 
-# ArchInit — Setup Wizard
+<img src="build/appicon.png" width="88" alt="ArchInit">
 
-**A beautiful, universal Arch Linux setup wizard.**  
-Simple enough for a 60-year-old. Fast enough for a developer.
+<h1>ArchInit</h1>
 
-[![Release](https://img.shields.io/github/v/release/KiruhiHub/SetupWizard?style=flat-square&color=7c6af8)](https://github.com/KiruhiHub/SetupWizard/releases)
-[![License](https://img.shields.io/badge/license-MIT-blue?style=flat-square)](LICENSE)
-[![Built with Wails](https://img.shields.io/badge/built%20with-Wails%20v2-blueviolet?style=flat-square)](https://wails.io)
+<p><strong>Arch Linux kurulum sihirbazı.</strong><br>
+60 yaşındaki biri için yeterince basit. Geliştirici için yeterince güçlü.</p>
+
+<br>
+
+[![Release](https://img.shields.io/github/v/release/KiruhiHub/SetupWizard?style=flat-square&color=7c6af8&label=release)](https://github.com/KiruhiHub/SetupWizard/releases)
+[![Go](https://img.shields.io/badge/Go-1.21+-00ADD8?style=flat-square&logo=go&logoColor=white)](https://go.dev)
+[![Wails](https://img.shields.io/badge/Wails-v2-blueviolet?style=flat-square)](https://wails.io)
+[![License](https://img.shields.io/badge/license-MIT-22c55e?style=flat-square)](LICENSE)
+
+<br>
 
 </div>
 
 ---
 
-## ✨ Features
+## Ne yapar?
 
-- **3-step onboarding** — Profile → Desktop style → Cloud sync
-- **Icon-first UI** — No technical jargon, universal symbols
-- **QR-based cloud auth** — Connect Google Drive, iCloud, OneDrive via rclone
-- **Live log streaming** — Watch installation progress in real time
-- **Dark UI** — Modern, minimal, production-grade design
-- **Wails v2** — Native desktop app, Go backend + Vite frontend
+Arch Linux kurulumunu 3 adıma indirir. Teknik bilgi gerekmez.
 
-## 📸 Screenshots
+```
+Adım 1 → Kim olduğunu seç   (Günlük / Yazılımcı / Özel)
+Adım 2 → Masaüstü stilini seç  (Windows / macOS / KDE)
+Adım 3 → Bulut hesabını bağla  (Google / iCloud / OneDrive)
+```
 
-| Step 1 — Profile | Step 2 — Desktop | Step 3 — Cloud |
-|:---:|:---:|:---:|
-| Choose your usage profile | Pick your desktop style | Connect cloud storage |
+Gerisini otomatik halleder.
 
-## 🚀 Quick Start
+---
 
-### Prerequisites
+## Özellikler
 
-- [Go 1.21+](https://go.dev/dl/)
-- [Node.js 18+](https://nodejs.org/)
-- [Wails v2](https://wails.io/docs/gettingstarted/installation)
-- [rclone](https://rclone.org/install/) *(for cloud sync)*
+- **İkon tabanlı arayüz** — Metin yok, herkes anlar
+- **QR ile bulut bağlantısı** — rclone OAuth, telefon ile tara
+- **Canlı kurulum logu** — Ne yüklendiğini anlık görürsün
+- **3 profil** — Günlük kullanım, Yazılımcı, Özel
+- **Sidebar navigasyon** — Nerede olduğunu her zaman bilirsin
+- **Wails v2** — Native uygulama, Go + Vite
 
-### Development
+---
+
+## Kurulum
+
+### Gereksinimler
+
+| Araç | Versiyon |
+|------|----------|
+| [Go](https://go.dev/dl/) | 1.21+ |
+| [Node.js](https://nodejs.org/) | 18+ |
+| [Wails](https://wails.io/docs/gettingstarted/installation) | v2 |
+| [rclone](https://rclone.org/install/) | herhangi |
+
+### Geliştirme
 
 ```bash
 git clone https://github.com/KiruhiHub/SetupWizard.git
@@ -51,48 +70,49 @@ wails dev
 
 ```bash
 wails build
+# → build/bin/SetupWizard
 ```
 
-Binary will be at `build/bin/SetupWizard`.
+---
 
-## 🏗️ Project Structure
+## Proje Yapısı
 
 ```
 SetupWizard/
-├── main.go              # Wails entry point
+├── main.go              # Wails giriş noktası
 ├── app.go               # Go backend (rclone, setup runner)
 ├── scripts/
-│   └── setup.sh         # Installation script
+│   └── setup.sh         # Kurulum betiği
 ├── frontend/
-│   ├── index.html       # Step 1 — Profile
-│   ├── page1.html       # Step 2 — Desktop style
-│   ├── page2.html       # Step 3 — Cloud sync
+│   ├── index.html       # Adım 1 — Profil
+│   ├── page1.html       # Adım 2 — Masaüstü stili
+│   ├── page2.html       # Adım 3 — Bulut bağlantısı
 │   └── src/
-│       ├── main.js      # Frontend logic
+│       ├── main.js
 │       └── css/style.css
 └── wails.json
 ```
 
-## 🔧 How It Works
+---
 
-1. User selects a **profile** (Daily / Developer / Custom)
-2. User picks a **desktop style** (Windows / macOS / KDE)
-3. User optionally connects **cloud storage** via QR code (rclone OAuth)
-4. Backend runs `scripts/setup.sh` with selected options
-5. Live logs stream to frontend via Wails events
+## Nasıl Çalışır?
 
-## 📦 Profiles
+1. Kullanıcı **profil** seçer
+2. Kullanıcı **masaüstü stili** seçer
+3. Kullanıcı **bulut hesabı** bağlar (QR kodu ile rclone OAuth)
+4. Backend `scripts/setup.sh` çalıştırır
+5. Loglar Wails events ile frontend'e akar
 
-| Profile | Installs |
-|---------|----------|
-| 🏠 Daily | Browser, Spotify, LibreOffice, VLC |
-| 💻 Developer | VS Code, Docker, Git, zsh, btop |
-| 🎛️ Custom | You choose |
+---
 
-## 🤝 Contributing
+## Katkı
 
-PRs welcome. Open an issue first for major changes.
+PR'lar açık. Büyük değişiklikler için önce issue aç.
 
-## 📄 License
+---
 
-MIT © [KiruhiHub](https://github.com/KiruhiHub)
+<div align="center">
+
+MIT © [KiruhiHub](https://github.com/KiruhiHub) · Made with ❤️ for the Linux community
+
+</div>
