@@ -90,11 +90,9 @@ EOF
 main() {
     log_section "Günlük Kullanıcı Profili"
 
-    refresh_sudo
     update_system
     setup_yay
     setup_flatpak
-    enable_multilib
 
     log_section "Temel Uygulamalar (pacman)"
     for pkg in "${PACMAN_PKGS[@]}"; do install_pkg "$pkg"; done

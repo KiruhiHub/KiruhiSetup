@@ -136,7 +136,6 @@ EOF
 main() {
     log_section "Yazılımcı Profili"
 
-    refresh_sudo
     update_system
     setup_yay
 

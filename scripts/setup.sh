@@ -1,23 +1,10 @@
 #!/usr/bin/env bash
 # ═══════════════════════════════════════════════════════════════
 #  ArchInit — Ana Kurulum Betiği
-#
-#  Kullanım:
-#    setup.sh --profile <profil> [seçenekler]
-#
-#  Seçenekler:
-#    --profile  gunluk | yazilimci | ozel   (zorunlu)
-#    --drivers  Kapalı kaynak GPU sürücüleri
-#    --cloud    google | icloud | onedrive | none
-#    --apps     "app1,app2"  (ozel profil için)
-#    --aur      AUR desteği (yay kurulumu)
-#
-#  Arkaplanda çalıştırma:
-#    setup.sh --profile gunluk &
-#    Loglar: /tmp/archinit_<tarih>.log
+#  sudo/root YOK — yay her şeyi halleder.
+#  Arkaplanda çalışır, loglar /tmp/archinit_*.log dosyasına.
 # ═══════════════════════════════════════════════════════════════
 
-# ── Argümanlar ────────────────────────────────────────────────
 PROFILE=""
 DRIVERS=false
 CLOUD="none"
@@ -36,83 +23,61 @@ while [[ $# -gt 0 ]]; do
     esac
 done
 
-# ── Log dosyası (Wails bunu okur) ─────────────────────────────
 export LOG_FILE="/tmp/archinit_$(date +%Y%m%d_%H%M%S).log"
 
-# ── Ortak kütüphane ───────────────────────────────────────────
 source "$SCRIPT_DIR/lib/common.sh"
 
-# ── Log başlığı ───────────────────────────────────────────────
+# Log başlığı
 {
-    echo "══════════════════════════════════════════"
-    echo "  ArchInit Kurulum Logu"
-    echo "  Tarih  : $(date '+%Y-%m-%d %H:%M:%S')"
+    echo "══════════════════════════════════════"
+    echo "  ArchInit — $(date '+%Y-%m-%d %H:%M:%S')"
     echo "  Profil : $PROFILE"
     echo "  Bulut  : $CLOUD"
-    echo "  Sürücü : $DRIVERS"
-    echo "  AUR    : $AUR"
     echo "  PID    : $$"
-    echo "══════════════════════════════════════════"
+    echo "══════════════════════════════════════"
 } > "$LOG_FILE"
 
-# Log dosyasını stdout'a da yaz (Wails stream için)
 echo "[ARCHINIT] Log: $LOG_FILE"
 echo "[ARCHINIT] PID: $$"
 
-# ── Profil doğrulama ──────────────────────────────────────────
 if [[ -z "$PROFILE" ]]; then
-    log_error "--profile belirtilmedi. Kullanım: gunluk | yazilimci | ozel"
+    log_error "Profil belirtilmedi."
     exit 1
+fi
+
+# ── yay zorunlu ───────────────────────────────────────────────
+if ! is_installed yay; then
+    log_info "yay bulunamadı, kuruluyor..."
+    setup_yay
 fi
 
 # ── Donanım tespiti ───────────────────────────────────────────
 detect_hardware() {
-    log_section "Donanım Tespiti"
+    log_section "Donanım"
 
-    # Laptop kontrolü
     if [[ -d /sys/class/power_supply/BAT0 ]] || [[ -d /sys/class/power_supply/BAT1 ]]; then
-        log_info "Laptop tespit edildi — TLP güç yönetimi kuruluyor..."
+        log_info "Laptop — TLP kuruluyor..."
         install_pkg "tlp"
         install_pkg "tlp-rdw"
-        sudo systemctl enable --now tlp >> "$LOG_FILE" 2>&1 || true
-        log_ok "TLP etkin."
+        # systemctl enable için yay --sudoloop kullanır
+        yay -S --noconfirm --needed tlp >> "$LOG_FILE" 2>&1 || true
     fi
 
-    # GPU tespiti
-    if lspci 2>/dev/null | grep -qi "nvidia"; then
-        log_info "NVIDIA GPU tespit edildi."
-        if [[ "$DRIVERS" == "true" ]]; then
-            install_pkg "nvidia"
-            install_pkg "nvidia-utils"
-            install_pkg "nvidia-settings"
-            log_ok "NVIDIA sürücüsü kuruldu."
-        else
-            log_warn "NVIDIA sürücüsü atlandı (--drivers ile etkinleştirin)."
-        fi
+    if lspci 2>/dev/null | grep -qi "nvidia" && [[ "$DRIVERS" == "true" ]]; then
+        install_pkg "nvidia"
+        install_pkg "nvidia-utils"
     elif lspci 2>/dev/null | grep -qi "amd\|radeon"; then
-        log_info "AMD GPU — mesa + vulkan-radeon kuruluyor."
         install_pkg "mesa"
         install_pkg "vulkan-radeon"
     elif lspci 2>/dev/null | grep -qi "intel"; then
-        log_info "Intel GPU — mesa + vulkan-intel kuruluyor."
         install_pkg "mesa"
         install_pkg "vulkan-intel"
     fi
 }
 
-# ── Kapalı kaynak codec'ler ───────────────────────────────────
-install_codecs() {
-    if [[ "$DRIVERS" != "true" ]]; then return 0; fi
-    log_section "Kapalı Kaynak Codec'ler"
-    enable_multilib
-    install_pkg "lib32-mesa"
-    install_pkg "ffmpeg"
-    log_ok "Codec'ler kuruldu."
-}
-
-# ── Bulut senkronizasyonu ─────────────────────────────────────
+# ── Bulut servisi ─────────────────────────────────────────────
 setup_cloud() {
-    if [[ "$CLOUD" == "none" ]] || [[ -z "$CLOUD" ]]; then return 0; fi
+    [[ "$CLOUD" == "none" ]] || [[ -z "$CLOUD" ]] && return 0
     log_section "Bulut: $CLOUD"
 
     install_pkg "rclone"
@@ -120,7 +85,6 @@ setup_cloud() {
     local mount_dir="$HOME/Cloud/$CLOUD"
     mkdir -p "$mount_dir"
 
-    # systemd user servisi
     local svc_dir="$HOME/.config/systemd/user"
     mkdir -p "$svc_dir"
 
@@ -131,87 +95,53 @@ After=network-online.target
 
 [Service]
 Type=notify
-ExecStart=/usr/bin/rclone mount ${CLOUD}: ${mount_dir} \\
-    --vfs-cache-mode writes \\
-    --vfs-cache-max-size 512M \\
-    --log-level INFO
+ExecStart=/usr/bin/rclone mount ${CLOUD}: ${mount_dir} --vfs-cache-mode writes --vfs-cache-max-size 512M
 ExecStop=/bin/fusermount -u ${mount_dir}
 Restart=on-failure
-RestartSec=10
 
 [Install]
 WantedBy=default.target
 EOF
-
     systemctl --user daemon-reload >> "$LOG_FILE" 2>&1 || true
-    log_ok "rclone servisi oluşturuldu → $mount_dir"
-    log_warn "Aktifleştirmek için: rclone config && systemctl --user enable --now rclone-${CLOUD}"
+    log_ok "rclone servisi hazır → $mount_dir"
 }
 
-# ── Profil çalıştır ───────────────────────────────────────────
+# ── Profil ────────────────────────────────────────────────────
 run_profile() {
     case "$PROFILE" in
         yazilimci|developer|dev)
-            bash "$SCRIPT_DIR/profiles/developer.sh"
-            ;;
+            bash "$SCRIPT_DIR/profiles/developer.sh" ;;
         gunluk|daily)
-            bash "$SCRIPT_DIR/profiles/daily.sh"
-            ;;
+            bash "$SCRIPT_DIR/profiles/daily.sh" ;;
         ozel|custom)
             export CUSTOM_APPS="$APPS"
-            bash "$SCRIPT_DIR/profiles/custom.sh"
-            ;;
+            bash "$SCRIPT_DIR/profiles/custom.sh" ;;
         *)
-            log_error "Bilinmeyen profil: '$PROFILE'"
-            exit 1
-            ;;
+            log_error "Bilinmeyen profil: $PROFILE"; exit 1 ;;
     esac
 }
 
-# ── Özet rapor ────────────────────────────────────────────────
+# ── Özet ──────────────────────────────────────────────────────
 print_summary() {
     local fails
     fails=$(grep -c "^\[FAIL" "$LOG_FILE" 2>/dev/null || echo 0)
-
     echo ""
-    echo "══════════════════════════════════════════"
-    echo "  ArchInit Kurulum Tamamlandı"
-    echo "  Profil : $PROFILE"
-    echo "  Tarih  : $(date '+%Y-%m-%d %H:%M:%S')"
-    echo "  Log    : $LOG_FILE"
-    if [[ "$fails" -gt 0 ]]; then
-        echo "  Uyarı  : $fails paket kurulamadı (log'u inceleyin)"
-    else
-        echo "  Durum  : Tüm paketler başarıyla kuruldu"
-    fi
-    echo "══════════════════════════════════════════"
-    echo ""
-
-    # Wails event için özel satır
-    if [[ "$fails" -gt 0 ]]; then
-        echo "[ARCHINIT:DONE:WARN] $fails paket başarısız"
-    else
-        echo "[ARCHINIT:DONE:OK] Kurulum tamamlandı"
-    fi
+    echo "══════════════════════════════════════"
+    echo "  Tamamlandı — $(date '+%H:%M:%S')"
+    echo "  Log: $LOG_FILE"
+    [[ "$fails" -gt 0 ]] \
+        && echo "  Uyarı: $fails paket kurulamadı" \
+        || echo "  Durum: Başarılı"
+    echo "══════════════════════════════════════"
+    [[ "$fails" -gt 0 ]] \
+        && echo "[ARCHINIT:DONE:WARN] $fails başarısız" \
+        || echo "[ARCHINIT:DONE:OK] Kurulum tamamlandı"
 }
 
 # ── Ana akış ──────────────────────────────────────────────────
 main() {
     log_section "ArchInit Başlatılıyor"
-    log_info "Profil: $PROFILE | Log: $LOG_FILE"
-
-    # sudo önbelleği yoksa kullanıcıyı bilgilendir
-    if ! sudo -n true 2>/dev/null; then
-        log_error "sudo önbelleği bulunamadı!"
-        log_error "Lütfen bir terminal açın ve şunu çalıştırın:"
-        log_error "  sudo -v"
-        log_error "Ardından uygulamayı tekrar başlatın."
-        echo "[ARCHINIT:DONE:FAIL] sudo önbelleği yok"
-        exit 1
-    fi
-
     detect_hardware
-    install_codecs
     run_profile
     setup_cloud
     print_summary

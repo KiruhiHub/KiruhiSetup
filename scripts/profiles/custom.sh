@@ -82,7 +82,6 @@ main() {
 
     log_section "Özel Profil"
 
-    refresh_sudo
     update_system
     setup_yay
     setup_flatpak
