@@ -32,6 +32,4 @@
 <div align="center">
 
 MIT © [KiruhiHub](https://github.com/KiruhiHub)  
-Made with ❤️ for the Linux community
-
 </div>
