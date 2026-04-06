@@ -21,7 +21,7 @@
 
 <div align="center">
 
-### ⬇️ İndir
+### ⬇️ Download
 
 [**Linux için indir (v1.0.0)**](https://github.com/KiruhiHub/SetupWizard/releases/download/v1.0.0/SetupWizard-linux-amd64)
 
