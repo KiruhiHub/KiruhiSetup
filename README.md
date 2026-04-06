@@ -1,5 +1,5 @@
 <div align="center">
-  <img src="Ekran Görüntüsü_20260406_214607.png" width="88" alt="Kiruhi Setup" />
+  <img src="Ekran Görüntüsü_20260406_214607.png"  alt="Kiruhi Setup" />
 
   # Kiruhi Setup
 
