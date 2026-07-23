@@ -3,7 +3,8 @@
 
   # Kiruhi Setup
 
-  **Arch Linux Installation Wizard**  
+  **Arch Linux Installation Wizard **  
+   ** This project was created using artificial intelligence **
 </div>
 
 
